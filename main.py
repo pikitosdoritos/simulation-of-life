@@ -13,11 +13,20 @@ class Entity:
         self.radius = 10
 
     def move(self):
-        if self.x + self.radius < WIDTH or self.y + self.radius < HEIGHT:
-            self.x += random.randint(-2, 2)
-            self.y += random.randint(-2, 2)
-        else:
-            self.x
+        self.x += random.randint(-2, 2)
+        self.y += random.randint(-2, 2)
+        
+        if self.x + self.radius > WIDTH:
+            self.x = WIDTH - self.radius
+        
+        elif self.x - self.radius < 0:
+            self.x = self.radius
+            
+        if self.y + self.radius > HEIGHT:
+            self.y = HEIGHT - self.radius
+            
+        elif self.y - self.radius < 0:
+            self.y = self.radius        
 
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
