@@ -13,7 +13,7 @@ class Entity:
         self.speed = random.randint(1, 5)
         self.direction = random.random() * (2 * math.pi)
         self.color = (0, 255, 0)
-        self.radius = 10
+        self.radius = 20
 
     def move(self):
         self.x += self.speed * math.cos(self.direction)
@@ -38,11 +38,20 @@ class Entity:
             
         elif self.y - self.radius < 0:
             self.y = self.radius 
-            self.direction = 2 * math.pi - self.direction      
+            self.direction = 2 * math.pi - self.direction  
+            
+    def bounce(self, other):
+        collision_angle = math.atan2(other.y - self.y, other.x - self.x)
 
+        self.direction = 2 * collision_angle - self.direction + math.pi
+        other.direction = 2 * collision_angle - other.direction + math.pi
+            
+    def does_overlap(self, other):
+        hypot = math.hypot(self.x - other.x, self.y - other.y)
+        return hypot < self.radius + other.radius       
+            
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
-
 
 pygame.init()
 
@@ -54,6 +63,27 @@ i = 0
 
 entities = [Entity() for _ in range(10)]
 
+def fix_overlaping(entities):
+    pairs = []
+    j = 0
+    
+    while j < len(entities) - 1:
+        k = j + 1
+        ent1 = entities[j]
+        
+        while k < len(entities):
+            ent2 = entities[k]
+        
+            if ent1.does_overlap(ent2):
+                pairs.append((ent1, ent2))
+                
+            k += 1
+
+        j += 1
+        
+    for pair in pairs:
+        pair[0].bounce(pair[1])
+        
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -65,6 +95,8 @@ while True:
     for entity in entities:
         entity.draw()
         entity.move()
+        
+    fix_overlaping(entities)
     
     i += 1
      
