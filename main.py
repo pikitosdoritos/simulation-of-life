@@ -23,15 +23,19 @@ class Entity:
         
         if self.x + self.radius > WIDTH:
             self.x = WIDTH - self.radius
+            self.direction = math.pi - self.direction
         
         elif self.x - self.radius < 0:
             self.x = self.radius
+            self.direction = math.pi - self.direction
             
         if self.y + self.radius > HEIGHT:
             self.y = HEIGHT - self.radius
+            self.direction = 2 * math.pi - self.direction
             
         elif self.y - self.radius < 0:
-            self.y = self.radius        
+            self.y = self.radius 
+            self.direction = 2 * math.pi - self.direction       
 
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
