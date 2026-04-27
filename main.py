@@ -13,7 +13,7 @@ class Entity:
         self.speed = random.randint(1, 5)
         self.direction = random.random() * (2 * math.pi)
         self.color = (0, 255, 0)
-        self.radius = 20
+        self.radius = 10
 
     def move(self):
         self.x += self.speed * math.cos(self.direction)
@@ -52,6 +52,20 @@ class Entity:
             
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+        
+class Food(Entity):
+    def __init__(self):
+        super().__init__()
+        self.color = (0, 255, 0)
+        self.radius = 3
+        self.speed = 0.5
+        
+class Predator(Entity):
+    def __init__(self):
+        super().__init__()
+        self.color = (255, 0, 0)
+        self.radius = 10
+    
 
 pygame.init()
 
@@ -61,7 +75,9 @@ screen.fill((0, 0, 0))
 
 i = 0
 
-entities = [Entity() for _ in range(10)]
+predators = [Predator() for _ in range(3)]
+
+food_list = [Food() for _ in range(10)]
 
 def fix_overlaping(entities):
     pairs = []
@@ -92,11 +108,15 @@ while True:
             
     screen.fill((0, 0, 0))
     
-    for entity in entities:
-        entity.draw()
-        entity.move()
+    for predator in predators:
+        predator.draw()
+        predator.move()
         
-    fix_overlaping(entities)
+    for food in food_list:
+        food.draw()
+        food.move()
+        
+    fix_overlaping(predators)
     
     i += 1
      
