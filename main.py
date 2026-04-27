@@ -21,6 +21,9 @@ class Entity:
         self.direction += random.uniform(-0.1, 0.1)
         self.speed += random.uniform(-0.1, 0.1)
         
+        self.normalize() 
+
+    def normalize(self):
         if self.x + self.radius > WIDTH:
             self.x = WIDTH - self.radius
             self.direction = math.pi - self.direction
@@ -35,7 +38,7 @@ class Entity:
             
         elif self.y - self.radius < 0:
             self.y = self.radius 
-            self.direction = 2 * math.pi - self.direction       
+            self.direction = 2 * math.pi - self.direction      
 
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
@@ -69,5 +72,5 @@ while True:
     
     pygame.display.flip()   
     
-    time.sleep(0.25)
+    # time.sleep(0.25)
         
