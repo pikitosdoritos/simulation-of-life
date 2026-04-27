@@ -1,6 +1,7 @@
 import pygame
 import random
 import time
+import math
 
 WIDTH = 800
 HEIGHT = 600
@@ -9,12 +10,14 @@ class Entity:
     def __init__(self):
         self.x = random.randint(50, WIDTH - 50)
         self.y = random.randint(50, HEIGHT - 50)
+        self.speed = random.randint(1, 5)
+        self.direction = random.random() * (2 * math.pi)
         self.color = (0, 255, 0)
         self.radius = 10
 
     def move(self):
-        self.x += random.randint(-2, 2)
-        self.y += random.randint(-2, 2)
+        self.x += self.speed * math.cos(self.direction)
+        self.y += self.speed * math.sin(self.direction)
         
         if self.x + self.radius > WIDTH:
             self.x = WIDTH - self.radius
@@ -60,5 +63,5 @@ while True:
     
     pygame.display.flip()   
     
-    # time.sleep(0.25)
+    time.sleep(0.25)
         
