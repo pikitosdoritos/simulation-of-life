@@ -18,6 +18,8 @@ class Entity:
     def move(self):
         self.x += self.speed * math.cos(self.direction)
         self.y += self.speed * math.sin(self.direction)
+        self.direction += random.uniform(-0.1, 0.1)
+        self.speed += random.uniform(-0.1, 0.1)
         
         if self.x + self.radius > WIDTH:
             self.x = WIDTH - self.radius
