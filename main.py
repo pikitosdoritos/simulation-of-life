@@ -49,6 +49,19 @@ class Entity:
     def does_overlap(self, other):
         hypot = math.hypot(self.x - other.x, self.y - other.y)
         return hypot < self.radius + other.radius       
+    
+    def find_closest(self, entities):
+        closest = None
+        min_dist = math.inf
+        
+        for entity in entities:
+            hypot = math.hypot(self.x - entity.x, self.y - entity.y)
+            
+            if hypot < min_dist:
+                min_dist = hypot
+                closest = entity
+                
+        return closest
             
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
@@ -65,7 +78,18 @@ class Predator(Entity):
         super().__init__()
         self.color = (255, 0, 0)
         self.radius = 10
-    
+        
+    def hunt(self):
+        target = self.find_closest(food_list)
+        
+        if target is None:
+            return
+        
+        self.direction = math.atan2(target.y - self.y, target.x - self.x)
+        self.move()
+        
+        if self.does_overlap(target):
+            food_list.remove(target)   
 
 pygame.init()
 
@@ -110,7 +134,7 @@ while True:
     
     for predator in predators:
         predator.draw()
-        predator.move()
+        predator.hunt()
         
     for food in food_list:
         food.draw()
@@ -122,7 +146,4 @@ while True:
      
     clock.tick(60)
     
-    pygame.display.flip()   
-    
-    # time.sleep(0.25)
-        
+    pygame.display.flip()
