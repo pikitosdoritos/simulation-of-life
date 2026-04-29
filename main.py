@@ -83,6 +83,9 @@ class Predator(Entity):
         self.color = kwargs.get("color", (255, 0, 0))
         self.radius = kwargs.get("radius", 10)
         
+    def reproduce(self):
+        return Predator(x=self.x, y=self.y, speed=random.randint(1, 5), direction=self.direction, color=self.color, radius=10)
+        
     def hunt(self):
         target = self.find_closest(food_list)
         
@@ -108,7 +111,7 @@ screen.fill((0, 0, 0))
 
 predators = [Predator() for _ in range(3)]
 
-reproduce_coef = 18 
+reproduce_coef = 15 
 
 food_list = [Prey() for _ in range(10)]
 
@@ -183,6 +186,12 @@ while True:
         for predator in predators:
             predator.draw()
             predator.hunt()
+            
+            if not random.randint(0, 3000):
+                predators.append(predator.reproduce())
+                
+            if predator.radius > 30:
+                predators.remove(predator)
             
         for food in food_list:
             food.draw()
