@@ -6,6 +6,10 @@ import math
 WIDTH = 800
 HEIGHT = 600
 
+game_over = False
+
+font = pygame.font.Font("fonts/Orbitron-Bold.ttf", 48)
+
 class Entity:
     def __init__(self, x=None, y=None, speed=None, direction=None, color=None, radius=None):
         self.x = x if x is not None else random.randint(50, WIDTH - 50)
@@ -132,6 +136,8 @@ def fix_overlaping(entities):
         pair[0].bounce(pair[1])
         
 while True:
+    if food_list == 0:
+        p
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
