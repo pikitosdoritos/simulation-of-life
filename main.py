@@ -92,7 +92,9 @@ class Predator(Entity):
         self.move()
         
         if self.does_overlap(target):
-            food_list.remove(target)   
+            food_list.remove(target)
+            self.radius += 0.1
+            self.speed += 0.1   
 
 pygame.init()
 
