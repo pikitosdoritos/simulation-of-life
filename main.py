@@ -7,13 +7,13 @@ WIDTH = 800
 HEIGHT = 600
 
 class Entity:
-    def __init__(self):
-        self.x = random.randint(50, WIDTH - 50)
-        self.y = random.randint(50, HEIGHT - 50)
-        self.speed = random.randint(1, 5)
-        self.direction = random.random() * (2 * math.pi)
-        self.color = (0, 255, 0)
-        self.radius = 10
+    def __init__(self, x=None, y=None, speed=None, direction=None, color=None, radius=None):
+        self.x = x if x is not None else random.randint(50, WIDTH - 50)
+        self.y = y if y is not None else random.randint(50, HEIGHT - 50)
+        self.speed = speed if speed is not None else random.randint(1, 5)
+        self.direction = direction if direction is not None else random.random() * (2 * math.pi)
+        self.color = color if color is not None else (0, 255, 0)
+        self.radius = radius if radius is not None else 10
 
     def move(self):
         self.x += self.speed * math.cos(self.direction)
@@ -22,7 +22,7 @@ class Entity:
         self.speed += random.uniform(-0.1, 0.1)
         
         self.normalize() 
-
+                        
     def normalize(self):
         if self.x + self.radius > WIDTH:
             self.x = WIDTH - self.radius
@@ -66,18 +66,21 @@ class Entity:
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
         
-class Food(Entity):
-    def __init__(self):
-        super().__init__()
-        self.color = (0, 255, 0)
-        self.radius = 3
-        self.speed = 0.5
+class Prey(Entity):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.color = kwargs.get("color", (0, 255, 0))
+        self.radius = kwargs.get("radius", 3)
+        self.speed = kwargs.get("speed", 0.5)
         
+    def reproduce(self):
+        return Prey(x=self.x, y=self.y, speed=self.speed, direction=self.direction, color=self.color, radius=self.radius)
+    
 class Predator(Entity):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.color = (255, 0, 0)
-        self.radius = 10
+        self.color = kwargs.get("color", (255, 0, 0))
+        self.radius = kwargs.get("radius", 10)
         
     def hunt(self):
         target = self.find_closest(food_list)
@@ -101,7 +104,9 @@ i = 0
 
 predators = [Predator() for _ in range(3)]
 
-food_list = [Food() for _ in range(10)]
+reproduce_coef = 18 
+
+food_list = [Prey() for _ in range(10)]
 
 def fix_overlaping(entities):
     pairs = []
@@ -140,6 +145,9 @@ while True:
         food.draw()
         food.move()
         
+        if not random.randint(0, len(food_list) * reproduce_coef):
+            food_list.append(food.reproduce())
+
     fix_overlaping(predators)
     
     i += 1
