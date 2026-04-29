@@ -8,8 +8,6 @@ HEIGHT = 600
 
 game_over = False
 
-font = pygame.font.Font("fonts/Orbitron-Bold.ttf", 48)
-
 class Entity:
     def __init__(self, x=None, y=None, speed=None, direction=None, color=None, radius=None):
         self.x = x if x is not None else random.randint(50, WIDTH - 50)
@@ -97,22 +95,56 @@ class Predator(Entity):
         
         if self.does_overlap(target):
             food_list.remove(target)
-            self.radius += 0.1
-            self.speed += 0.1   
+            self.radius += 0.5
+            self.speed += 0.01   
 
 pygame.init()
 
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-screen.fill((0, 0, 0))
+font = pygame.font.Font("fonts/Audiowide-Regular.ttf", 48)
+but_font = pygame.font.Font("fonts/Audiowide-Regular.ttf", 28)
 
-i = 0
+screen.fill((0, 0, 0))
 
 predators = [Predator() for _ in range(3)]
 
 reproduce_coef = 18 
 
 food_list = [Prey() for _ in range(10)]
+
+def draw_game_over():
+    text = font.render("GAME OVER", True, (255, 0, 0))
+    button_text = but_font.render("RESTART", True, (0, 0, 0))
+
+    text_rect = text.get_rect(center=(WIDTH//2, HEIGHT//2 - 80))
+    
+    button_rect = pygame.Rect(0, 0, 220, 60)
+    button_rect.center = (WIDTH//2, HEIGHT//2 + 40)
+
+    # hover эффект
+    mouse_pos = pygame.mouse.get_pos()
+    if button_rect.collidepoint(mouse_pos):
+        pygame.draw.rect(screen, (200, 200, 200), button_rect)
+    else:
+        pygame.draw.rect(screen, (150, 150, 150), button_rect)
+
+    pygame.draw.rect(screen, (255, 255, 255), button_rect, 2)
+
+    text_button_rect = button_text.get_rect(center=button_rect.center)
+
+    screen.blit(text, text_rect)
+    screen.blit(button_text, text_button_rect)
+
+    return button_rect
+
+def restart():
+    global predators, food_list, game_over
+    
+    predators = [Predator() for _ in range(3)]
+    food_list = [Prey() for _ in range(10)] 
+    game_over = False
+
 
 def fix_overlaping(entities):
     pairs = []
@@ -136,30 +168,37 @@ def fix_overlaping(entities):
         pair[0].bounce(pair[1])
         
 while True:
-    if food_list == 0:
-        p
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             quit()
             
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if game_over:
+                if restart_button.collidepoint(event.pos):
+                    restart()
     screen.fill((0, 0, 0))
     
-    for predator in predators:
-        predator.draw()
-        predator.hunt()
-        
-    for food in food_list:
-        food.draw()
-        food.move()
-        
-        if not random.randint(0, len(food_list) * reproduce_coef):
-            food_list.append(food.reproduce())
+    if not game_over:
+        for predator in predators:
+            predator.draw()
+            predator.hunt()
+            
+        for food in food_list:
+            food.draw()
+            food.move()
+            
+            if not random.randint(0, len(food_list) * reproduce_coef):
+                food_list.append(food.reproduce())
 
-    fix_overlaping(predators)
-    
-    i += 1
-     
-    clock.tick(60)
-    
+        fix_overlaping(predators)
+        
+        if len(food_list) == 0:
+            game_over = True
+            
+    else:
+        restart_button = draw_game_over()
+        
     pygame.display.flip()
+    clock.tick(60)
